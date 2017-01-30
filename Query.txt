@@ -1,0 +1,61 @@
+WITH TelemetryData AS 
+(
+     SELECT
+          Stream.DeviceID AS DeviceId,
+          'Temperature' AS ReadingType,
+          Stream.Temperature AS Reading,
+          Stream.EventToken AS EventToken,
+          Stream.EventEnqueuedUtcTime AS [Time]
+     FROM IoTStream Stream
+),
+MaxInMinute AS
+(
+     SELECT
+         TopOne() OVER (ORDER BY Time DESC) AS telemetryEvent,
+         AVG(Reading) AS ReadingAVG,
+         STDEV(Reading) AS ReadingSTDEV
+     FROM
+         TelemetryData 
+     GROUP BY 
+         TumblingWindow(second, 50), DeviceId
+),
+GetRULResultQuery AS
+(
+     SELECT
+         telemetryEvent.DeviceId AS DeviceId,
+         telemetryEvent.ReadingType AS ReadingType,
+         telemetryEvent.Reading AS Reading,
+         telemetryEvent.EventToken AS EventToken,
+         telemetryEvent.Time AS Time,
+         ReadingAVG,
+         ReadingSTDEV,
+         GetRULfromML(
+             1,1,1,1,
+             telemetryEvent.Reading,
+             1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+             ReadingAVG,
+             1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+             ReadingSTDEV,
+             1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+             ) AS GetRULResult
+     FROM
+         MaxInMinute
+)
+
+SELECT 
+    data.DeviceId,
+    data.ReadingType,
+    data.Reading,
+    data.EventToken,
+    Ref.Temperature AS Threshold,
+    Ref.TemperatureRuleOutput AS RuleOutput,
+    data.Time,
+    data.ReadingAVG,
+    data.ReadingSTDEV,
+    data.GetRULResult.[Scored Labels] AS label,
+    Ref.RUL AS RefRUL
+INTO ItWillFailSoon
+FROM GetRULResultQuery data
+JOIN DeviceRulesBlob Ref ON Ref.DeviceType = 'Thermostat'
+WHERE   Ref.RUL IS NOT null AND
+        data.GetRULResult.[Scored Labels]  < Ref.RUL
