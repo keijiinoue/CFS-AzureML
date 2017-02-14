@@ -33,5 +33,3 @@ Connected Field Service for Dynamics 365 (CFS)  で Azure ML で用意されて�
 	* Stream Analytics ジョブを開始します。  
 	* シミュレーターでデバイスからデータを送ると、Dynamics 365 で[IoT 通知」エンティティレコードが作成されることを確認します。  
 
-## 事後作業
-* もし、上記の手順で Stream Analytics ジョブを開始後、かつシミュレーターでデバイスからデータを送っている最中に、 Stream Analytics ジョブが強制終了してしまう場合には、クエリの最後の2行（WHERE句）を削除することで回避できます。この場合、閾値に関わらずキューに出力されますので、作成した Logic App を編集し、閾値に基づいた条件に合致する場合のみ Dynamics 365 にレコードを作成するようなロジックに修正します。  

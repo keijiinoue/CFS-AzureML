@@ -58,4 +58,4 @@ INTO ItWillFailSoon
 FROM GetRULResultQuery data
 JOIN DeviceRulesBlob Ref ON Ref.DeviceType = 'Thermostat'
 WHERE   Ref.RUL IS NOT null AND
-        data.GetRULResult.[Scored Labels]  < Ref.RUL
+        CAST ( data.GetRULResult.[Scored Labels] AS float )  < Ref.RUL
