@@ -28,7 +28,8 @@ Connected Field Service for Dynamics 365 (CFS)  で Azure ML で用意されて�
 	* Azure の CFS のリソースグループ内に、新規に Stream Analytics ジョブを作成します。  
 	* CFS で既定で作成される Stream Analytics ジョブ には2つありますが、出力が「AlertsQueue」に設定されているものと2つの同じ入力を設定します。  
 	* 出力は、適宜名前を付け、先ほど作成したキューに設定します。
-	* クエリは、こちらのサンプル [Query.txt
+	* 新規の関数（"GetRULfromML" のような名前）を作成し、作成済みの Azure ML の Web サービスを呼び出すようにします。  
+ 	* クエリは、こちらのサンプル [Query.txt
 ](https://github.com/keijiinoue/CFS-AzureML/blob/master/Query.txt "Query.txt") の通りに設定します。センサーデータの平均値(AVG)や標準偏差(STDEV)の値を Azure ML の Web サービスのパラメーターとして渡すための GROUP BY 句などが重要です。  
 	* Stream Analytics ジョブを開始します。  
 	* シミュレーターでデバイスからデータを送ると、Dynamics 365 で[IoT 通知」エンティティレコードが作成されることを確認します。  
